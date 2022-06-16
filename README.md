@@ -1,4 +1,6 @@
-# flutter_stetho
+# stetho_network_inspector
+
+NOTE: This is a clone of [flutter_stetho](https://pub.dev/packages/flutter_stetho) and modified to support Flutter 3.0.
 
 A plugin that connects Flutter to the Chrome Dev Tools on Android devices via the [Stetho Android Library](http://facebook.github.io/stetho/).
 
@@ -6,7 +8,7 @@ A plugin that connects Flutter to the Chrome Dev Tools on Android devices via th
 
 The main feature I was aiming to achieve was a Network Inspector. 
 
-<img src="https://github.com/brianegan/flutter_stetho/raw/master/assets/network_inspector.gif" alt="Network Inspector in Action">
+<img src="https://github.com/anilraok/stetho_network_inspector/raw/master/assets/network_inspector.gif" alt="Network Inspector in Action">
 
 ## Getting Started
 
@@ -14,15 +16,11 @@ How can you too get this plugin up and running in your own app? Follow these ste
 
 ### Install the plugin  
 
-Add `flutter_stetho` to your dependencies in the `pubspec.yaml` file
-
-  - For Flutter 1.7.x, use version `0.3.x`
-  - For Flutter 1.8.x, use version `0.4.x`
-  - For Flutter 1.9.x, use version `0.5.x`
+Add `stetho_network_inspector` to your dependencies in the `pubspec.yaml` file
 
 ### Install StethoHttpOverrides
 
-Next, you'll need to install the `Stetho.initialize()` in the main() function of your app. This will enable Stetho and allow `flutter_stetho` to wrap all http calls and report information to the Chrome Dev Tools via the Stetho package from Facebook.
+Next, you'll need to install the `Stetho.initialize()` in the main() function of your app. This will enable Stetho and allow `stetho_network_inspector` to wrap all http calls and report information to the Chrome Dev Tools via the Stetho package from Facebook.
 
 Note: It's probably a good idea only put this override in [a `main_dev.dart` file](https://flutter.rocks/2018/03/02/separating-build-environments-part-one/). 
 
