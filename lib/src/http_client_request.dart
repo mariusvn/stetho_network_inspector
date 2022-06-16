@@ -2,15 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_stetho/src/http_client_response.dart';
-import 'package:flutter_stetho/src/inspector_response.dart';
-import 'package:flutter_stetho/src/method_channel_controller.dart';
-import 'package:flutter_stetho/src/utils.dart';
+import 'http_client_response.dart';
+import 'inspector_response.dart';
+import 'method_channel_controller.dart';
+import 'utils.dart';
 
 class StethoHttpClientRequest implements HttpClientRequest {
   final HttpClientRequest request;
   final String id;
-  final StreamController<List<int>> _streamController = StreamController.broadcast();
+  final StreamController<List<int>> _streamController =
+      StreamController.broadcast();
   Stream get stream => _streamController.stream.asBroadcastStream();
 
   StethoHttpClientRequest(
@@ -25,14 +26,14 @@ class StethoHttpClientRequest implements HttpClientRequest {
   }
 
   @override
-  void addError(Object error, [StackTrace stackTrace]) {
+  void addError(Object error, [StackTrace? stackTrace]) {
     request.addError(error, stackTrace);
   }
 
   @override
   Future addStream(Stream<List<int>> stream) {
     var newStream = stream.asBroadcastStream();
-    newStream.listen((onData)=> _streamController.add(onData));
+    newStream.listen((onData) => _streamController.add(onData));
     return request.addStream(newStream);
   }
 
@@ -98,7 +99,7 @@ class StethoHttpClientRequest implements HttpClientRequest {
       request.persistentConnection = persistentConnection;
 
   @override
-  HttpConnectionInfo get connectionInfo => request.connectionInfo;
+  HttpConnectionInfo? get connectionInfo => request.connectionInfo;
 
   @override
   List<Cookie> get cookies => request.cookies;
@@ -119,7 +120,7 @@ class StethoHttpClientRequest implements HttpClientRequest {
   Uri get uri => request.uri;
 
   @override
-  void write(Object obj) {
+  void write(Object? obj) {
     request.write(obj);
   }
 
@@ -137,12 +138,17 @@ class StethoHttpClientRequest implements HttpClientRequest {
   }
 
   @override
-  void writeln([Object obj = ""]) {
+  void writeln([Object? obj = ""]) {
     request.writeln(obj);
-    if (obj is String){
+    if (obj is String) {
       _streamController.add(obj.codeUnits);
     } else {
       _streamController.add(obj.toString().codeUnits);
     }
+  }
+
+  @override
+  void abort([Object? exception, StackTrace? stackTrace]) {
+    request.abort(exception, stackTrace);
   }
 }

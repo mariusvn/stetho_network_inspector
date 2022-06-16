@@ -1,30 +1,30 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter_stetho/src/http_client_request.dart';
-import 'package:flutter_stetho/src/inspector_request.dart';
-import 'package:flutter_stetho/src/method_channel_controller.dart';
-import 'package:flutter_stetho/src/utils.dart';
+import 'http_client_request.dart';
+import 'inspector_request.dart';
+import 'method_channel_controller.dart';
+import 'utils.dart';
 
 class StethoHttpClient implements HttpClient {
-  final HttpClient client;
+  late final HttpClient client;
 
   StethoHttpClient(this.client);
 
   @override
-  bool autoUncompress;
+  bool autoUncompress = false;
 
   @override
-  Duration idleTimeout;
+  Duration idleTimeout = const Duration(seconds: 120);
 
   @override
-  Duration connectionTimeout;
+  Duration? connectionTimeout;
 
   @override
-  int maxConnectionsPerHost;
+  int? maxConnectionsPerHost;
 
   @override
-  String userAgent;
+  String? userAgent;
 
   @override
   void addCredentials(
@@ -47,21 +47,22 @@ class StethoHttpClient implements HttpClient {
 
   @override
   set authenticate(
-    Future<bool> Function(Uri url, String scheme, String realm) f,
+    Future<bool> Function(Uri url, String scheme, String? realm)? f,
   ) {
     client.authenticate = f;
   }
 
   @override
   set authenticateProxy(
-    Future<bool> Function(String host, int port, String scheme, String realm) f,
+    Future<bool> Function(String host, int port, String scheme, String? realm)?
+        f,
   ) {
     client.authenticateProxy = f;
   }
 
   @override
   set badCertificateCallback(
-    bool Function(X509Certificate cert, String host, int port) callback,
+    bool Function(X509Certificate cert, String host, int port)? callback,
   ) {
     client.badCertificateCallback = callback;
   }
@@ -114,7 +115,7 @@ class StethoHttpClient implements HttpClient {
   Future<HttpClientRequest> patchUrl(Uri url) => openUrl("patch", url);
 
   @override
-  set findProxy(String Function(Uri url) f) => client.findProxy = f;
+  set findProxy(String Function(Uri url)? f) => client.findProxy = f;
 
   @override
   Future<HttpClientRequest> open(
@@ -123,7 +124,7 @@ class StethoHttpClient implements HttpClient {
     int port,
     String path,
   ) async {
-    Uri uri = Uri(host: host,port: port, path: path);
+    Uri uri = Uri(host: host, port: port, path: path);
     return await openUrl(method, uri);
   }
 
@@ -132,7 +133,7 @@ class StethoHttpClient implements HttpClient {
     return client.openUrl(method, url).then((request) {
       final wrapped = _wrapResponse(request);
       List<int> body = [];
-      if (method.toLowerCase() != 'post' && method.toLowerCase() != 'put'){
+      if (method.toLowerCase() != 'post' && method.toLowerCase() != 'put') {
         scheduleMicrotask(() {
           MethodChannelController.requestWillBeSent(
             new FlutterStethoInspectorRequest(
@@ -169,5 +170,18 @@ class StethoHttpClient implements HttpClient {
     final id = new Uuid().generateV4();
 
     return new StethoHttpClientRequest(request, id);
+  }
+
+  @override
+  set connectionFactory(
+      Future<ConnectionTask<Socket>> Function(
+              Uri url, String? proxyHost, int? proxyPort)?
+          f) {
+    client.connectionFactory = f;
+  }
+
+  @override
+  set keyLog(Function(String line)? callback) {
+    client.keyLog = callback;
   }
 }
