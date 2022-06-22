@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:stetho_network_inspector/flutter_stetho.dart';
+import 'package:stetho_network_inspector/stetho_network_inspector.dart';
 import 'package:http/http.dart' as http;
 
 void main() {
   Stetho.initialize();
 
-  runApp(new FlutterStethoExample(
+  runApp(new StethoNetworkInspectorExample(
     client: new http.Client(),
   ));
 }
 
-class FlutterStethoExample extends StatelessWidget {
+class StethoNetworkInspectorExample extends StatelessWidget {
   late final http.Client client;
 
-  FlutterStethoExample({Key? key, required this.client}) : super(key: key);
+  StethoNetworkInspectorExample({Key? key, required this.client})
+      : super(key: key);
 
   fetchImage() {
     client.get(

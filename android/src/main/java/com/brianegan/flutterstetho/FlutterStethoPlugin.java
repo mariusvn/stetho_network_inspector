@@ -34,7 +34,7 @@ public class FlutterStethoPlugin implements MethodCallHandler {
     private final Stetho.Initializer initializer;
 
     public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_stetho");
+        final MethodChannel channel = new MethodChannel(registrar.messenger(), "stetho_network_inspector");
         channel.setMethodCallHandler(new FlutterStethoPlugin(registrar.context()));
     }
 
