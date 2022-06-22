@@ -9,6 +9,10 @@ import com.facebook.stetho.inspector.protocol.ChromeDevtoolsDomain;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
@@ -18,13 +22,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
-public class FlutterStethoPlugin implements MethodCallHandler {
+public class FlutterStethoPlugin implements FlutterPlugin, MethodCallHandler {
     public final static String TAG = "FlutterStethoPlugin";
     private final NetworkEventReporter mEventReporter = NetworkEventReporterImpl.get();
     private final Map<String, PipedInputStream> inputs = new HashMap<>();
@@ -32,9 +37,10 @@ public class FlutterStethoPlugin implements MethodCallHandler {
     private final Map<String, FlutterStethoInspectorResponse> responses = new HashMap<>();
     private final Map<String, LinkedBlockingQueue<QueueItem>> queues = new HashMap<>();
     private final Stetho.Initializer initializer;
+    private static MethodChannel channel;
 
     public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "stetho_network_inspector");
+        channel = new MethodChannel(registrar.messenger(), "stetho_network_inspector");
         channel.setMethodCallHandler(new FlutterStethoPlugin(registrar.context()));
     }
 
@@ -169,6 +175,18 @@ public class FlutterStethoPlugin implements MethodCallHandler {
         } catch (IOException e) {
             mEventReporter.responseReadFailed(interpretedResponseId, e.getMessage());
         }
+    }
+
+    @Override
+    public void onAttachedToEngine(@NonNull @NotNull FlutterPluginBinding binding) {
+        channel = new MethodChannel(binding.getBinaryMessenger(), "stetho_network_inspector");
+        channel.setMethodCallHandler(new FlutterStethoPlugin(binding.getApplicationContext()));
+    }
+
+    @Override
+    public void onDetachedFromEngine(@NonNull @NotNull FlutterPluginBinding binding) {
+        channel.setMethodCallHandler(null);
+        channel = null;
     }
 
     interface QueueItem {

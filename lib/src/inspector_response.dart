@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class FlutterStethoInspectorResponse {
   final String url;
   final bool connectionReused;
