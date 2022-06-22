@@ -1,6 +1,6 @@
 name: stetho_network_inspector
 description: A network inspector for Flutter on Android using the Chrome Dev Tools
-version: 0.5.3
+version: 0.5.4
 homepage: https://github.com/anilraok/stetho_network_inspector
 
 environment:
